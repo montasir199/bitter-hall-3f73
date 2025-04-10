@@ -1,0 +1,51 @@
+# عينة سير العمل لبناء ونشر موقع Jekyll على صفحات GitHub
+الاسم.: نشر Jekyll مع تبعيات GitHub Pages مثبتة مسبقًا
+
+على.:
+  # يعمل على دفعات تستهدف الفرع الافتراضي
+  دفع. :
+  الفروع. : ["الرئيسية"]
+
+  # يسمح لك بتشغيل سير العمل هذا يدويًا من علامة التبويب Actions
+  سير العمل_إرسال :
+
+# يحدد أذونات GITHUB_TOKEN للسماح بالنشر في صفحات GitHub
+الأذونات.:
+  المحتويات. : قراءة.
+ صفحات : اكتب.
+  ID-توكن. : اكتب.
+
+# السماح فقط نشر متزامن واحد، تخطي أشواط في طوابير بين تشغيل قيد التنفيذ وأحدث اصطف.
+# ومع ذلك، لا تلغي عمليات التشغيل قيد التنفيذ لأننا نريد السماح لعمليات النشر هذه بالإكمال.
+التوافق.:
+  المجموعة. : "صفحات"
+  إلغاء في التقدم. : كاذبة.
+
+وظائف.:
+  # بناء وظيفة
+  بناء. :
+    runs-on: أوبونتو-الأحدث.
+    steps:
+      - name: الخروج.
+        uses: الإجراءات/الخروج @v4
+      - name: إعداد الصفحات.
+        uses: الإجراءات/التكوين-الصفحات@v5
+      - name: بناء مع Jekyll
+        uses: الإجراءات/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
